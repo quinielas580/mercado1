@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1e6fdc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bazar-PIQ">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Bazar-PIQ</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0d1b2a;}
+  #splash{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:#0d1b2a;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:9999;transition:opacity .4s;
+  }
+  #splash img{width:180px;height:180px;border-radius:28px;box-shadow:0 8px 32px rgba(0,198,255,.3);}
+  #splash h1{
+    font-family:Arial Black,sans-serif;font-size:28px;font-weight:900;
+    color:#fff;margin-top:20px;letter-spacing:2px;
+  }
+  #splash h1 span{color:#00c6ff;}
+  #splash p{color:#9aa5b4;font-size:13px;margin-top:6px;letter-spacing:1px;text-transform:uppercase;}
+  .loader{width:40px;height:40px;border:3px solid rgba(255,255,255,.15);border-top-color:#00c6ff;border-radius:50%;animation:spin .7s linear infinite;margin-top:30px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #app-frame{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    border:none;opacity:0;transition:opacity .3s;
+  }
+  #app-frame.loaded{opacity:1;}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <img src="icon-192.png" alt="Bazar-PIQ">
+  <h1>Bazar<span>-PIQ</span></h1>
+  <p>Mercado Local</p>
+  <div class="loader"></div>
+</div>
+
+<iframe id="app-frame"
+  src="https://script.google.com/macros/s/AKfycbyKF3Mx9QY_LKzAjnJnBJMxacqGQoHeJ3MwLgzXjcIYggFFBCqe-E4kIHbqE6NxnYCTxQ/exec"
+  allow="camera; microphone"
+  allowfullscreen>
+</iframe>
+
+<script>
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(r){ console.log('SW OK:', r.scope); })
+      .catch(function(e){ console.log('SW err:', e); });
+  }
+
+  // Hide splash when iframe loads
+  var frame = document.getElementById('app-frame');
+  var splash = document.getElementById('splash');
+
+  frame.addEventListener('load', function() {
+    setTimeout(function() {
+      frame.classList.add('loaded');
+      setTimeout(function() {
+        splash.style.opacity = '0';
+        setTimeout(function() { splash.style.display = 'none'; }, 400);
+      }, 200);
+    }, 500);
+  });
+
+  // Fallback: if iframe takes too long, redirect directly
+  setTimeout(function() {
+    if (splash.style.display !== 'none') {
+      window.location.href = 'https://script.google.com/macros/s/AKfycbyKF3Mx9QY_LKzAjnJnBJMxacqGQoHeJ3MwLgzXjcIYggFFBCqe-E4kIHbqE6NxnYCTxQ/exec';
+    }
+  }, 8000);
+</script>
+</body>
+</html>
